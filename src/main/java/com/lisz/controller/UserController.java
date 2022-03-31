@@ -1,14 +1,18 @@
 package com.lisz.controller;
 
 import com.lisz.api.UserApi;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import com.lisz.entity.User;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 用OpenFeign的时候
+ * 各个重写的方法上面都不用加 @GetMapping @PostMapping 等注解，因为在API包里的哪个UserApi接口上已经有了
+ * 但是最好是把该写的注解全写上
+ */
 @RestController
 public class UserController implements UserApi {
 	@GetMapping("/alive")
@@ -22,26 +26,31 @@ public class UserController implements UserApi {
 	}
 
 	@GetMapping("/map")
-	public Map<Integer, String> map(@RequestParam int id) { //这里 @RequestParam 可写可不写，默认也是去参数里面去找，而不是body
+	public Map<Integer, String> getMap(@RequestParam int id) { //这里 @RequestParam 可写可不写，默认也是去参数里面去找，而不是body
 		System.out.println(id);
 		return Collections.singletonMap(id, "hahaha");
 	}
 
 	@GetMapping("/map2")
-	public Map<Integer, String> map2(@RequestParam int id, @RequestParam String name) {
+	public Map<Integer, String> getMap2(@RequestParam int id, @RequestParam String name) {
 		System.out.println(id);
 		return Collections.singletonMap(id, name);
 	}
 
 	@GetMapping("/map3")
-	public Map<Integer, String> map3(Map<String, Object> map) {
+	public Map<Integer, String> getMap3(Map<String, Object> map) {
 		System.out.println(map);
 		return Collections.singletonMap(Integer.parseInt(map.get("id").toString()), map.get("name").toString());
 	}
 
 	@PostMapping("/map4")
-	public Map<Integer, String> map4(Map<String, Object> map) {
+	public Map<Integer, String> postMap(@RequestBody Map<String, Object> map) {
 		System.out.println(map);
 		return Collections.singletonMap(Integer.parseInt(map.get("id").toString()), map.get("name").toString());
+	}
+
+	@PostMapping("/map5")
+	public User postMap2(@RequestBody User user) {
+		return new User(user.getId() + 1, user.getName() + "!!!~");
 	}
 }
