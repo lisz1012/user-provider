@@ -2,10 +2,12 @@ package com.lisz.controller;
 
 import com.lisz.api.UserApi;
 import com.lisz.entity.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -15,9 +17,26 @@ import java.util.Map;
  */
 @RestController
 public class UserController implements UserApi {
+
+	@Value("${server.port}")
+	private int port;
+
+	@Value("${spring.boot.admin.notify.slack.channel}")
+	private String channel;
+
+	@Value("${spring.boot.admin.notify.slack.webhook-url}")
+	private String webhookUrl;
+
+	@Autowired
+	private RestTemplate restTemplate;
+
 	@GetMapping("/alive")
 	public String alive(){
-		return "OK";
+		String json = "{\"channel\": \"#app-health\", \"username\": \"Oncall Assistant\", " +
+						"\"text\": \"user-provider is still alive!!\", " +
+						"\"icon_emoji\": \":scream_cat:\"}";
+		restTemplate.postForEntity(webhookUrl, json, Void.class);
+		return "port: " + port;
 	}
 
 	@GetMapping("/user/{id}")

@@ -1,6 +1,21 @@
 spring:
   application:
     name: user-provider
+  #zipkin
+  zipkin:
+    base-url: http://localhost:9411/
+    #采样比例1
+  sleuth:
+    sampler:
+      rate: 1
+  boot:
+    admin:
+      notify:
+        slack:
+          channel: app-health
+          webhook-url: "https://hooks.slack.com/services/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"
+          username: spring cloud admin
+          message: "*#{application.name}* (#{application.id}) is *#{to.status}*"
 server:
   port: 8080
 eureka:
